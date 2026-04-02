@@ -8,6 +8,7 @@ class User(SQLModel, table=True):
     name: str
     is_driver: bool = False
     points: Optional[int] = 0
+    lootboxes: Optional[int] = 0
 
 class DriverXP(SQLModel, table=True):
     __tablename__ = "drivers_xp"

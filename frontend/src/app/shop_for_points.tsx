@@ -14,18 +14,23 @@ export default function Shop() {
   const [goods, setGoods] = useState<any[]>([]);
   const [balance, setBalance] = useState<any>("");
   const [userId, setUserId] = useState<any>("");
+  const [lootsAvailable, setLoots] = useState<any>("");
   const router = useRouter();
 
   useEffect(() => {
     const getAsyncItems = async () => {
         const user_id = await AsyncStorage.getItem("user_id");
+        const lootboxes_res = await fetch(`http://localhost:8000/shop/get_lootboxes?user_id=${user_id}`);
+        const lootboxes = await lootboxes_res.json();
         const balance_res = await fetch(`http://localhost:8000/shop/get_balance?user_id=${user_id}`);
         const user_bal = await balance_res.json();
         setUserId(user_id);
         setBalance(user_bal);
+        setLoots(lootboxes);
     };
     getAsyncItems();
     console.log(userId, balance);
+    console.log(lootsAvailable);
     fetch("http://localhost:8000/shop")
       .then(res => res.json())
       .then(data => setGoods(data));
@@ -37,6 +42,24 @@ export default function Shop() {
       method: "POST"
     })
   }
+
+  const openLootbox = async () => {
+
+    const res = await fetch(`http://localhost:8000/shop/open_lootbox?user_id=${userId}`, {
+      method: "POST"
+    });
+
+    const data = await res.json();
+
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+
+      alert(`Вы получили: ${data.reward_name}`);
+
+    router.push("/shop_for_points");
+  };
 
   return (
 
@@ -71,12 +94,26 @@ export default function Shop() {
         </View>
 
       ))}
-        <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/")}
-        >
+
+
+
+      <Text style={styles.title}>Лутбоксы: {lootsAvailable}</Text>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={openLootbox}
+      >
+        <Text>Открыть лутбокс</Text>
+      </TouchableOpacity>
+
+
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push("/")}
+      >
         <Text>На главную</Text>
-        </TouchableOpacity>
+      </TouchableOpacity>
     </ScrollView>
   );
 }

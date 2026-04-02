@@ -67,6 +67,7 @@ def take_trip(data: TripTake):
         driver = session.get(User, data.driver_id)
         passanger.points += 50
         driver.points += 50
+        passanger.lootboxes += 1
         session.add(passanger)
         session.add(driver)
 
