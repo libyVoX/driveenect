@@ -7,10 +7,11 @@ class User(SQLModel, table=True):
     phone: str  # номер телефона, уникальный
     name: str
     is_driver: bool = False
+    points: Optional[int] = 0
 
 class DriverXP(SQLModel, table=True):
     __tablename__ = "drivers_xp"
-    user_id: int = Field(default=None, primary_key=True)
+    user_id: Optional[int] = Field(default=None, primary_key=True)
     xp: int = 0
     is_active: bool = True
 
@@ -27,4 +28,16 @@ class Trip(SQLModel, table=True):
     is_done: bool = False
     canceled_reason: Optional[str] = None
 
+class Goods(SQLModel, table=True):
+    __tablename__ = "goods"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: Optional[str]
+    discription: Optional[str]
+    price: int
 
+class Purchase(SQLModel, table=True):
+    __tablename__ = "purchases"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int
+    goods_id: int

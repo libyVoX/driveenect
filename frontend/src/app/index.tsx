@@ -16,7 +16,8 @@ export default function App() {
   const [menuVisible, setMenuVisible] = useState(false); // управление модальным меню
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState("");
-  const [role, setRole] = useState("водителем");
+  const [role, setRole] = useState("");
+  
 
   // Проверка токена при загрузке
   useEffect(() => {
@@ -25,8 +26,11 @@ export default function App() {
       const name = await AsyncStorage.getItem("user_name");
       const user_id = await AsyncStorage.getItem("user_id");
       const is_driver = await AsyncStorage.getItem("is_driver");
-      if (is_driver) {
+      console.log(is_driver);
+      if (!is_driver) {
         setRole("пассажиром");
+      } else {
+        setRole("водителем");
       }
       if (!token) {
         router.replace("/login");
@@ -63,18 +67,27 @@ export default function App() {
   const toggleRole = () => {
     router.replace("/drivers_index");
   };
+  const to_profile = () => {
+    if (role != "пассажиром") {
+      router.replace("/passenger_profile")
+    } else{
+      router.replace("/driver_profile")
+    }
+  };
 
   if (loading) return <Text style={{color: "white", marginTop: 50, textAlign: "center"}}>Checking auth...</Text>;
 
+  
   return (
     <View style={styles.container}>
+        
       {/* Кнопка меню */}
       <View style={[styles.topLeftButtons, { top: insets.top + 10 }]}>
         <TouchableOpacity style={styles.circleButton} onPress={() => setMenuVisible(true)}>
           <Text style={styles.icon}>≡</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.circleButton} onPress={() => router.push('/bonus')}>
+        <TouchableOpacity style={styles.circleButton} onPress={() => router.push('/shop_for_points')}>
           <Text style={styles.icon}>🎁</Text>
         </TouchableOpacity>
       </View>
@@ -90,6 +103,10 @@ export default function App() {
           <View style={styles.menuContainer}>
             <Text style={styles.menuText}>Имя: {userName}</Text>
             <Text style={styles.menuText}>ID: {userId}</Text>
+
+            <TouchableOpacity style={styles.menuButton} onPress={() => to_profile()}>
+              <Text style={styles.menuButtonText}>Личный кабинет</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity style={styles.menuButton} onPress={toggleRole}>
               <Text style={styles.menuButtonText}>Стать {role}</Text>
@@ -196,6 +213,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
   },
+  map: {
+
+        width: "100%",
+        height: "40%",
+
+    },
   menuText: { color: "#fff", fontSize: 18, marginBottom: 12 },
   menuButton: { backgroundColor: "#8de000", padding: 12, borderRadius: 10, marginTop: 10, alignItems: "center" },
   menuButtonText: { fontSize: 16, fontWeight: "600" },
