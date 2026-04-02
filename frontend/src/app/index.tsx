@@ -57,6 +57,7 @@ export default function App() {
         passenger_id: user_id,
       }),
     });
+    router.push('/')
   };
 
   const logout = async () => {

@@ -1,155 +1,48 @@
+// DriverCabinet.tsx
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity
-} from "react-native";
-import { useRouter } from "expo-router";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, Text, ActivityIndicator, ScrollView, StyleSheet } from "react-native";
 
-export default function PassengerProfile() {
-
-  const router = useRouter();
-
-  const [xp, setXp] = useState(0);
-  const [trips, setTrips] = useState([]);
-  const [userId, setUserId] = useState("");
-  const [userName, setUserName] = useState("");
-
+export default function DriverCabinet({ driverId }: { driverId: number }) {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadProfile();
+    fetch(`http://localhost:8000/drivers/${driverId}`)
+      .then(res => res.json())
+      .then(json => {
+        setData(json);
+        setLoading(false);
+      });
   }, []);
 
-  const loadProfile = async () => {
-
-      const name = await AsyncStorage.getItem("user_name");
-      const user_id = await AsyncStorage.getItem("user_id");
-      const xpRes = await fetch(`http://127.0.0.1:8000/xp/${userId}`);
-      const xpData = await xpRes.json();
-
-      setXp(xpData.xp);
-      setUserId(user_id || "");
-      setUserName(name || "");
-
-      const tripsRes = await fetch(`http://127.0.0.1:8000/trips`);
-      const tripsData = await tripsRes.json();
-
-      setTrips(tripsData);
-  };
+  if (loading) return <ActivityIndicator style={{ marginTop: 50 }} />;
 
   return (
-    <View style={styles.container}>
-
-      <Text style={styles.title}>Профиль водителя</Text>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>Имя</Text>
-        <Text style={styles.value}>{userName} ({userId})</Text>
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Личный кабинет водителя</Text>
+      <View style={styles.row}>
+        <Text style={styles.label}>ID:</Text>
+        <Text>{data.id}</Text>
       </View>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>XP</Text>
-        <Text style={styles.value}>0</Text>
+      <View style={styles.row}>
+        <Text style={styles.label}>Имя:</Text>
+        <Text>{data.name}</Text>
       </View>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>Поездок</Text>
-        <Text style={styles.value}>0</Text>
+      <View style={styles.row}>
+        <Text style={styles.label}>Активен:</Text>
+        <Text>{data.is_active ? "Да" : "Нет"}</Text>
       </View>
-
-      <TouchableOpacity
-        style={styles.button}
-      >
-        <Text style={styles.buttonText}>История поездок</Text>
-      </TouchableOpacity>
-
-      
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("/")}
-      >
-        <Text style={styles.buttonText}>На главную</Text>
-      </TouchableOpacity>
-
-    </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Рейтинг:</Text>
+        <Text>{data.rating}</Text>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-
-  container: {
-    flex: 1,
-    backgroundColor: "#000",
-    padding: 20
-  },
-
-  title: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: "white",
-    marginBottom: 20
-  },
-
-  subtitle: {
-    fontSize: 18,
-    color: "white",
-    marginTop: 20,
-    marginBottom: 10
-  },
-
-  card: {
-    backgroundColor: "#2e3237",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 10
-  },
-
-  label: {
-    color: "#aaa"
-  },
-
-  value: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "600"
-  },
-
-  tripList: {
-    flex: 1
-  },
-
-  tripCard: {
-    backgroundColor: "#3b3f45",
-    padding: 14,
-    borderRadius: 10,
-    marginBottom: 10
-  },
-
-  tripRoute: {
-    color: "white",
-    fontSize: 16
-  },
-
-  tripPrice: {
-    color: "#8de000",
-    marginTop: 4
-  },
-
-  button: {
-    backgroundColor: "#8de000",
-    padding: 16,
-    borderRadius: 12,
-    alignItems: "center",
-    marginTop: 10
-  },
-
-  buttonText: {
-    fontWeight: "600",
-    fontSize: 16
-  }
-
+  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
+  row: { flexDirection: "row", marginBottom: 15 },
+  label: { fontWeight: "bold", width: 120 }
 });

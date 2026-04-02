@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from sqlmodel import Session,select
 from database import engine
-from models import Trip
+from models import Trip, User
 from pydantic import BaseModel
 from datetime import datetime
 from sqlmodel import select
@@ -40,7 +40,7 @@ def create_trip(data: TripCreate):
 
 
 
-
+# --------------ДЛЯ ПРОТОТИПА ЗАВЕРШАЕТСЯ СРАЗУ!!!!!!!!!!--------------
 @router.post("/trip/take")
 def take_trip(data: TripTake):
 
@@ -56,6 +56,22 @@ def take_trip(data: TripTake):
 
         trip.driver_id = data.driver_id
         trip.start_time = datetime.utcnow()
+
+
+
+        #ЗАВЕРШЕНИЕ СРАЗУ!!!!!!!!
+        trip.end_time = datetime.utcnow()
+        trip.is_done = True
+
+        passanger = session.get(User, trip.passenger_id)
+        driver = session.get(User, data.driver_id)
+        passanger.points += 50
+        driver.points += 50
+        session.add(passanger)
+        session.add(driver)
+
+
+
 
         session.add(trip)
         session.commit()
@@ -89,7 +105,7 @@ def available_trips():
     with Session(engine) as session:
 
         trips = session.exec(
-            select(Trip).where(Trip.is_done == False)
+            select(Trip).where(Trip.is_done == False, Trip.driver_id == None)
         ).all()
 
         return trips

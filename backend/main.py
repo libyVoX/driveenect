@@ -3,7 +3,7 @@ from sqlmodel import SQLModel
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import engine
-from routers import xp, trips, auth, shop
+from routers import xp, trips, auth, shop, drivers
 
 app = FastAPI()
 app.add_middleware(
@@ -20,3 +20,4 @@ app.include_router(xp.router)
 app.include_router(trips.router)
 app.include_router(auth.router)
 app.include_router(shop.router)
+app.include_router(drivers.router)
