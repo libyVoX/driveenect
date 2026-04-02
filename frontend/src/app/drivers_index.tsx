@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
 
 
 
@@ -11,6 +12,8 @@ export default function DriverPage() {
     const data = await res.json();
     setTrips(data);
   };
+
+  const router = useRouter();
 
   useEffect(() => {
     loadTrips();
@@ -87,7 +90,12 @@ export default function DriverPage() {
         ))}
 
       </ScrollView>
-
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push("/")}
+      >
+        <Text>На главную</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -147,6 +155,13 @@ buttonText:{
 done:{
   marginTop:10,
   color:"#8de000"
-}
+},
+button: {
+    backgroundColor: "#8de000",
+    padding: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    marginTop: 10
+},
 
 });

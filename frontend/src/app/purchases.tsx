@@ -50,7 +50,7 @@ export default function Purchases() {
 
       {goods.map(item => (
 
-        <View key={item.id} style={styles.card}>
+        <View key={item.purchase_id} style={styles.card}>
 
           <Text style={styles.name}>{item.name}</Text>
 

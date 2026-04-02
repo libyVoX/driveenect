@@ -46,11 +46,19 @@ def get_purchases(user_id: int):
     with Session(engine) as session:
 
         statement = (
-            select(Goods)
-            .join(Purchase, Purchase.goods_id == Goods.id)
+            select(Purchase, Goods)
+            .join(Goods, Goods.id == Purchase.goods_id)
             .where(Purchase.user_id == user_id)
         )
 
-        goods = session.exec(statement).all()
+        results = session.exec(statement).all()
 
-        return goods
+        return [
+            {
+                "purchase_id": purchase.id,
+                "name": goods.name,
+                "discription": goods.discription,
+                "price": goods.price
+            }
+            for purchase, goods in results
+        ]
